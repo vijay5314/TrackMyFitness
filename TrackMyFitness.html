@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Fitness Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+
+h2, h3, h4, h5, h6 {
+  font-weight: normal;
+}
+
+    #welcome-screen {
+  text-align: center;
+  padding: 80px 20px;
+  background-color: #fdfdfd;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin: 80px auto;
+  max-width: 500px;
+}
+
+#welcome-screen h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+#welcome-screen p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+#welcome-screen button {
+  font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#welcome-screen button:hover {
+  background-color: #45a049;
+}
+
+
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      background: #96a6c7;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1, h2 {
+      text-align: center;
+      font-size: 3rem;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      font-size: 1rem;
+      color: #444;
+      margin-top: 10px;
+      margin-bottom: 2px;
+    }
+
+    #bmi-result {
+  color: #333;
+  background: #fdfdfd;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-width: 200px;
+}
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    input[type="number"],
+    input[type="date"] {
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      width: 100%;
+      max-width: 200px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fafafa;
+      box-sizing: border-box;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+     -moz-appearance: textfield;
+    }
+
+    button {
+      font-size: 0.85rem;
+      padding: 4px 6px;
+      margin-top: 8px;
+      background-color: #f0f0f0;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e0e0e0;
+    }
+
+    #goal-display {
+      background: #e1eddf;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    #entries {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin-top: 2rem;
+    }
+
+    .entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 5px;
+    }
+
+    .entry-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .small-btn {
+      font-size: 0.8rem;
+      padding: 2px 6px;
+      background: #eee;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .small-btn:hover {
+      background-color: #ddd;
+    }
+
+    canvas {
+      margin-top: 2rem;
+    }
+
+    .bmi-box {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  width: fit-content;
+  color: white;
+}
+
+.bmi-history {
+  font-size: 0.85rem;
+  padding-left: 1rem;
+  color: #222;
+}
+
+.bmi-history li {
+  margin-bottom: 4px;
+}
+
+.bmi-delete-btn {
+  font-size: 0.75rem;
+  margin-left: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #888;
+}
+
+.bmi-delete-btn:hover {
+  color: #f44336;
+}
+
+select {
+  font-size: 0.85rem;
+  padding: 4px 6px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+button {
+  transition: background-color 0.2s ease;
+}
+
+#goal-display button.small-btn {
+  margin-top: 10px;
+  margin-left: 5px;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  background-color: #eee;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#goal-display button.small-btn:hover {
+  background-color: #ddd;
+}
+
+#progress-bar-container {
+  width: 100%;
+  height: 20px;
+  background-color: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #f44336; /* default red */
+  text-align: center;
+  color: white;
+  font-size: 0.75rem;
+  line-height: 20px;
+  transition: width 0.4s ease, background-color 0.4s ease;
+}
+.progress-message {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  text-align: center;
+  color: #333;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.progress-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* This is for mobile layout, don't change */
+
+@media (max-width: 900px) {
+  body {
+    padding: 15px;
+    font-size: 15px;
+  }
+
+  h1, h2 {
+    font-size: 2.2rem;
+  }
+
+  input[type="number"],
+  input[type="date"],
+  select {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  button {
+    font-size: 1rem;
+    padding: 8px 12px;
+  }
+
+  .entry {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+input, button, select {
+  touch-action: manipulation;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+button {
+  min-width: 44px;
+  min-height: 44px; /* For tap targets on mobile */
+}
+
+  </style>
+</head>
+
+<body>
+
+<div id="welcome-screen">
+  <h1>Welcome to TrackMyFitness©️</h1>
+  <p>Your personal health and weight progress companion.</p>
+  <button onclick="enterApp()">Start Tracking</button>
+</div>
+
+<div id="app-screen" style="display: none;">
+  <!-- your current content here -->
+
+  <h2>TrackMyFitness©️</h2>
+
+  <div id="goal-input-section" class="form-group">
+  <label for="goal">Set Your Goal Weight (kg):</label>
+  <input type="number" id="goal" placeholder="e.g. 65">
+  <button onclick="saveGoal()">Save Goal</button>
+</div>
+
+<div id="goal-display"> </div>
+
+<div id="progress-bar-container">
+  <div id="progress-bar"></div>
+</div>
+<div id="progress-message" class="progress-message"></div>
+
+
+  <div class="form-group">
+    <label for="date">Date:</label>
+    <input type="date" id="date">
+
+    <label for="weight">Weight (kg):</label>
+    <input type="number" id="weight" placeholder="Enter your weight">
+
+    <button onclick="addOrUpdateEntry()">➕</button>
+  </div>
+
+  <div class="form-group">
+  <button onclick="toggleBMISection()">BMI Calculator</button>
+</div>
+
+
+<div id="bmi-section" style="display: none;">
+  <label for="height">Height (cm):</label>
+  <input type="number" id="height" placeholder="Enter your height">
+
+  <button onclick="calculateBMI()">Calculate BMI</button>
+  <div id="bmi-result" class="bmi-box"></div>
+
+  <h3 style="margin-top: 1.5rem;">BMI History</h3>
+  <ul id="bmi-history" class="bmi-history"></ul>
+
+<label for="activity">Activity Level:</label>
+<select id="activity" onchange="calculateBMI()">
+  <option value="1.2">Sedentary (little or no exercise)</option>
+  <option value="1.375">Lightly active (1–3 days/week)</option>
+  <option value="1.55">Moderately active (3–5 days/week)</option>
+  <option value="1.725">Very active (6–7 days/week)</option>
+  <option value="1.9">Super active (physical job or 2× training)</option>
+</select>
+<div id="calorie-results" class="bmi-box" style="margin-top: 10px;"></div>
+</div>
+
+  <div class="form-group">
+  <button onclick="toggleEntries()">Your Record</button>
+</div>
+
+  <div id="entries">
+    <h3>Your Record</h3>
+    <div id="entry-list"></div>
+  </div>
+
+  <div style="position: relative; height: 300px; width: 100%;">
+  <canvas id="weightChart"></canvas>
+</div>
+
+  </div>
+
+  <script>
+
+    const entryList = document.getElementById('entry-list');
+    const goalInput = document.getElementById('goal');
+    const goalDisplay = document.getElementById('goal-display');
+    const chartCtx = document.getElementById('weightChart').getContext('2d');
+    const dateInput = document.getElementById('date');
+    const weightInput = document.getElementById('weight');
+
+    let entries = JSON.parse(localStorage.getItem('entries')) || [];
+    let goalWeight = parseFloat(localStorage.getItem('goalWeight')) || null;
+    let chart;
+    let editingIndex = null;
+
+    function enterApp() {
+  document.getElementById('welcome-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+}
+
+    function saveEntries() {
+      localStorage.setItem('entries', JSON.stringify(entries));
+    }
+
+    function saveGoal() {
+      const goal = parseFloat(goalInput.value);
+      if (isNaN(goal)) {
+        alert("Please enter a valid goal weight.");
+        return;
+      }
+      goalWeight = goal;
+      localStorage.setItem('goalWeight', goalWeight);
+      updateGoalMessage();
+      goalInput.value = '';
+    document.getElementById('goal-input-section').style.display = 'none';
+    }
+
+    function editGoal() {
+    document.getElementById('goal-input-section').style.display = 'block';
+    }
+
+    function updateGoalMessage() {
+  // Hide input section if goal is already set
+  if (goalWeight) {
+    document.getElementById('goal-input-section').style.display = 'none';
+  }
+
+  // Build base goal message
+  let message = `<p><strong>Goal:</strong> ${goalWeight ? goalWeight + ' kg' : 'Not set yet'}</p>`;
+
+  // Add comparison to latest entry if available
+  if (goalWeight && entries.length > 0) {
+    const sorted = [...entries].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const latest = sorted[sorted.length - 1].weight;
+    const diff = (latest - goalWeight).toFixed(1);
+
+    if (diff > 0) {
+      message += `<p>You are ${diff} kg <strong>above</strong> your goal. Keep going! 💪</p>`;
+    } else if (diff < 0) {
+      message += `<p>You're ${Math.abs(diff)} kg <strong>below</strong> your goal! 🎉</p>`;
+    } else {
+      message += `<p>You reached your goal! 🏁</p>`;
+    }
+  }
+
+  // Add edit button
+  message += `<button class="small-btn" onclick="editGoal()">✏️</button>`;
+  goalDisplay.innerHTML = message;
+
+  // -------- Progress bar logic --------
+  const progressBar = document.getElementById('progress-bar');
+  const messageBox = document.getElementById('progress-message');
+  let motivation = '';
+
+  if (goalWeight && entries.length > 0) {
+  const sorted = [...entries].sort((a, b) => new Date(a.date) - new Date(b.date));
+  const latest = sorted[sorted.length - 1].weight;
+
+  let percent;
+  if (goalWeight < latest) {
+    percent = 100 - ((latest - goalWeight) / goalWeight) * 100;
+  } else {
+    percent = (latest / goalWeight) * 100;
+  }
+
+  percent = Math.max(0, Math.min(100, percent)).toFixed(1);
+  const p = parseFloat(percent);
+
+  // Update progress bar
+  const progressBar = document.getElementById('progress-bar');
+  progressBar.style.width = `${percent}%`;
+  progressBar.textContent = `${percent}%`;
+
+  // Color logic and motivation
+  const messageBox = document.getElementById('progress-message');
+  let motivation = "";
+
+  if (p < 30) {
+    progressBar.style.backgroundColor = '#f44336';
+    motivation = "Let’s get started!";
+  } else if (p < 60) {
+    progressBar.style.backgroundColor = '#ff9800';
+    motivation = "Keep going!";
+  } else if (p < 80) {
+    progressBar.style.backgroundColor = '#ffeb3b';
+    progressBar.style.color = '#000';
+    motivation = "You're doing great!";
+  } else if (p < 100) {
+    progressBar.style.backgroundColor = '#4caf50';
+    motivation = "You're so close!";
+  } else if (p === 100) {
+    progressBar.style.backgroundColor = '#00e676';
+    motivation = "You did it! 🎉";
+  }
+
+    // Animate motivational message
+    messageBox.classList.remove('show');
+    setTimeout(() => {
+      messageBox.textContent = motivation;
+      messageBox.classList.add('show');
+    }, 100);
+
+// Animate message update
+messageBox.classList.remove('show'); // reset animation
+setTimeout(() => {
+  messageBox.textContent = motivation;
+  messageBox.classList.add('show');
+}, 100);
+  }
+    }
+    function displayEntries() {
+      entryList.innerHTML = '';
+      entries.slice().reverse().forEach((entry, i) => {
+        const trueIndex = entries.length - 1 - i;
+        const div = document.createElement('div');
+        div.className = 'entry';
+        div.innerHTML = `
+          ${entry.date}: ${entry.weight} kg
+          <span class="entry-buttons">
+            <button class="small-btn" onclick="startEdit(${trueIndex})">✏️</button>
+            <button class="small-btn" onclick="deleteEntry(${trueIndex})">🗑️</button>
+          </span>
+        `;
+        entryList.appendChild(div);
+      });
+    }
+
+    function updateChart() {
+      const dates = entries.map(e => e.date);
+      const weights = entries.map(e => e.weight);
+
+      if (chart) {
+        chart.destroy();
+      }
+
+      chart = new Chart(chartCtx, {
+        type: 'line',
+        data: {
+          labels: dates,
+          datasets: [{
+            label: 'Weight (kg)',
+            data: weights,
+            fill: false,
+            borderColor: 'blue',
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+        }
+      });
+    }
+
+    function addOrUpdateEntry() {
+      const date = dateInput.value;
+      const weight = parseFloat(weightInput.value);
+
+      if (!date || isNaN(weight)) {
+        alert("Please enter both a valid date and weight.");
+        return;
+      }
+
+      if (editingIndex !== null) {
+        const isDuplicate = entries.some((e, i) => i !== editingIndex && e.date === date);
+        if (isDuplicate) {
+          alert("Another entry already exists for that date.");
+          return;
+        }
+
+        entries[editingIndex] = { date, weight };
+        editingIndex = null;
+        document.querySelector("button[onclick='addOrUpdateEntry()']").textContent = "Add Entry";
+      } else {
+        const duplicate = entries.some(entry => entry.date === date);
+        if (duplicate) {
+          alert("You've already entered a weight for this date. Use edit instead.");
+          return;
+        }
+
+        entries.push({ date, weight });
+      }
+
+      saveEntries();
+      displayEntries();
+      updateChart();
+      updateGoalMessage();
+      dateInput.value = '';
+      weightInput.value = '';
+    }
+
+    function deleteEntry(index) {
+      if (confirm("Are you sure you want to delete this entry?")) {
+        entries.splice(index, 1);
+        saveEntries();
+        displayEntries();
+        updateChart();
+        updateGoalMessage();
+      }
+    }
+
+    function startEdit(index) {
+      const entry = entries[index];
+      dateInput.value = entry.date;
+      weightInput.value = entry.weight;
+      editingIndex = index;
+
+      const addBtn = document.querySelector("button[onclick='addOrUpdateEntry()']");
+      addBtn.textContent = "Save Changes";
+    }
+
+    // Initialize
+    displayEntries();
+    if (entries.length > 0) updateChart();
+    updateGoalMessage();
+
+    window.startEdit = startEdit;
+    window.deleteEntry = deleteEntry;
+
+    let bmiLog = JSON.parse(localStorage.getItem('bmiHistory')) || [];
+
+function toggleBMISection() {
+  const section = document.getElementById('bmi-section');
+  section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function calculateBMI() {
+  const weight = parseFloat(weightInput.value);
+  const height = parseFloat(document.getElementById('height').value);
+  const activityMultiplier = parseFloat(document.getElementById('activity').value);
+
+  if (isNaN(weight) || isNaN(height) || height === 0) {
+    alert("Please enter both weight and height.");
+    return;
+  }
+
+  const heightInMeters = height / 100;
+  const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+
+  let category = '';
+  let color = '';
+  if (bmi < 18.5) {
+    category = 'Underweight';
+    color = '#87CEEB';
+  } else if (bmi < 25) {
+    category = 'Normal';
+    color = '#4CAF50';
+  } else if (bmi < 30) {
+    category = 'Overweight';
+    color = '#FF9800';
+  } else {
+    category = 'Obese';
+    color = '#F44336';
+  }
+
+  const resultBox = document.getElementById('bmi-result');
+  resultBox.textContent = `Your BMI is ${bmi} (${category})`;
+  resultBox.style.backgroundColor = color;
+
+  // Estimate BMR using Mifflin-St Jeor (gender-neutral estimate)
+  const bmr = 10 * weight + 6.25 * height - 5 * 30; // assuming age ~30
+  const tdee = Math.round(bmr * activityMultiplier);
+
+  const maintain = tdee;
+  const lose = tdee - 500;
+  const gain = tdee + 500;
+
+  const calorieBox = document.getElementById('calorie-results');
+  calorieBox.innerHTML = `
+    <strong>Estimated Daily Calories:</strong><br>
+    🔵 Maintain: ${maintain} kcal/day<br>
+    🟢 Lose: ${lose} kcal/day<br>
+    🔴 Gain: ${gain} kcal/day
+  `;
+  calorieBox.style.backgroundColor = '#474';
+
+  // Save BMI entry
+  const date = new Date().toLocaleDateString();
+  const entry = `${date}: BMI ${bmi} (${category})`;
+  bmiLog.push(entry);
+  localStorage.setItem('bmiHistory', JSON.stringify(bmiLog));
+  displayBMIHistory();
+}
+
+function displayBMIHistory() {
+  const list = document.getElementById('bmi-history');
+  list.innerHTML = '';
+  bmiLog.slice().reverse().forEach((entry, i) => {
+    const trueIndex = bmiLog.length - 1 - i; // correct index when reversed
+    const li = document.createElement('li');
+    li.innerHTML = `
+      ${entry}
+      <button onclick="deleteBMIEntry(${trueIndex})" class="bmi-delete-btn">🗑️</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function deleteBMIEntry(index) {
+  if (confirm("Delete this BMI entry?")) {
+    bmiLog.splice(index, 1);
+    localStorage.setItem('bmiHistory', JSON.stringify(bmiLog));
+    displayBMIHistory();
+  }
+}
+
+// Initialize BMI history display on page load
+displayBMIHistory();
+
+function toggleEntries() {
+  const entriesSection = document.getElementById('entries');
+  const button = event.target;
+
+  if (entriesSection.style.display === 'none') {
+    entriesSection.style.display = 'block';
+    button.textContent = "Hide Your Records";
+  } else {
+    entriesSection.style.display = 'none';
+    button.textContent = "Show Your Records";
+  }
+}
+
+  </script>
+</body>
+</html>
